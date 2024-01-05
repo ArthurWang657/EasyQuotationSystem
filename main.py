@@ -6,7 +6,7 @@ from tkinter import simpledialog
 customerData = pd.read_excel("客戶資料.xlsx")
 window = tk.Tk()
 window.title("客戶系統")
-window.minsize(width=1000, height=1000)
+window.minsize(width=800, height=600)
 window.resizable(width=False, height=False)
 
 def combobox_selected(event):
@@ -51,17 +51,17 @@ customerNames = customerNames.drop_duplicates()
 customerNames = customerNames.reset_index(drop=True)
 customerList = list(customerNames['客戶名稱'].tolist())
 
-labelTop = tk.Label(window, text="選擇客戶", height=2, font=('微軟正黑體', 12))
-labelTop.pack()
+#labelTop = tk.Label(window, text="選擇客戶", height=2, font=('微軟正黑體', 12))
+#labelTop.pack()
 
 comboboxText = tk.StringVar()
-customerCombo = ttk.Combobox(window, values=customerList, height=10, state='readonly', font=('微軟正黑體', 12))
+customerCombo = ttk.Combobox(window, values=customerList, height=2, state='readonly', font=('微軟正黑體', 12))
 customerCombo.current(0)
 customerCombo.pack()
 customerCombo.bind('<<ComboboxSelected>>', combobox_selected)
 
 labelText = tk.StringVar()
-customerLabel = tk.Label(window, textvariable=labelText, height=5, font=('Arial', 12))
+customerLabel = tk.Label(window, textvariable=labelText, height=2, font=('Arial', 12))
 customerLabel.pack()
 
 shoppingList = ttk.Treeview(window, columns=list(customerData.columns), show='headings')
