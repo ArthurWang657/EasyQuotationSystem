@@ -1,11 +1,15 @@
 import pandas as pd
 import tkinter as tk
 import math
+import openpyxl
+import datetime
 from tkinter import ttk
 from tkinter import simpledialog
 from tkinter import font as tkFont
+from tkinter import messagebox
 
-customerData = pd.read_excel("客戶資料.xlsx")
+DataFloder = "c:\\Users\\88693\\Desktop\\"
+customerData = pd.read_excel(DataFloder + "客戶資料.xlsx")
 window = tk.Tk()
 window.title("客戶系統")
 window.minsize(width=800, height=600)
@@ -58,7 +62,20 @@ def showFinalResult():
             
     quotation.insert('', 'end',  values=('總共', '', '', '','', totalValue))
 
-customerNames = pd.read_excel("客戶資料.xlsx", usecols=['客戶名稱'])
+def capture_treeview():
+    wb = openpyxl.load_workbook(DataFloder + '銷售紀錄.xlsx', data_only=True)
+    s1 = wb['工作表1']
+    for data in quotation.get_children() :
+        dataValue = quotation.item(data, "values")
+        if '總共' not in dataValue[0] :
+            appendValue = [dataValue[0],dataValue[1],dataValue[2],dataValue[3],dataValue[4],dataValue[5],datetime.date.today()]
+            s1.append(appendValue)
+
+    wb.save(DataFloder + '銷售紀錄.xlsx')
+    messagebox.showinfo('保存結果','記錄保存成功')
+
+
+customerNames = pd.read_excel(DataFloder+"客戶資料.xlsx", usecols=['客戶名稱'])
 column_names = ['客戶名稱']
 customerList = []
 customerNames = customerNames.drop_duplicates()
@@ -82,7 +99,11 @@ customerLabel.pack()
 
 style = ttk.Style()
 style.configure("shoppingList", font=('Arial', 14))
+
 shoppingList = ttk.Treeview(window, columns=list(customerData.columns), show='headings')
+vsb = ttk.Scrollbar(window, orient="vertical", command=shoppingList.yview)
+vsb.pack(side='right', fill='y')
+shoppingList.configure(yscrollcommand=vsb.set)
 for col in customerData.columns:
     shoppingList.heading(col, text=col)
 
@@ -90,12 +111,15 @@ shoppingList.bind('<ButtonRelease-1>', treeViewClick)
 shoppingList.tag_configure("Treeview", font=bigfont)
 shoppingList.pack()
 
-quotationList = []
+
 show_button = tk.Button(window, text="結算", height=1, command=showFinalResult, font=bigfont)
 listTitle = list(customerData.columns)
 listTitle.append("金額")
 quotation = ttk.Treeview(window, columns=listTitle , show='headings')
 show_button.pack()
 quotation.pack()
+
+button = tk.Button(window, text="保存", command=capture_treeview)
+button.pack()
 
 window.mainloop()
